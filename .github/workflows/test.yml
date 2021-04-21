@@ -1,12 +1,9 @@
 # This is a basic workflow to help you get started with Actions
-
-name: CI
-
+name: qbittorrent-nox icu amd64
 # Controls when the action will run. 
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -15,17 +12,44 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: alpine:latest
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      - run: |
-            apk add bash
-            # sudo apt-get install python3-numpy
-            bash qbittorrent-nox-static.sh all
-      - name: Archive code coverage results
+    - uses: actions/checkout@v2
+    #
+    - name: Install bash
+    - run:  apk add bash
+    #
+    - name: Install build dependencies
+    - run:  bash qbittorrent-nox-static.sh
+    #
+    - name: build zlib
+    - run:  bash qbittorrent-nox-static.sh zlib
+    #
+    - name: build openssl
+    - run:  bash qbittorrent-nox-static.sh openssl
+    #
+    - name: build openssl
+    - run:  bash qbittorrent-nox-static.sh icu
+    #
+    - name: build boost
+    - run:  bash qbittorrent-nox-static.sh boost
+    #
+    - name: build libtorrent
+    - run:  bash qbittorrent-nox-static.sh libtorrent
+    #
+    - name: build qtbase
+    - run:  bash qbittorrent-nox-static.sh qtbase
+    #
+    - name: build qttools
+    - run:  bash qbittorrent-nox-static.sh qttools
+    #
+    - name: build qbittorrent
+    - run:  bash qbittorrent-nox-static.sh qbittorrent
+    #
+    - name: Archive code coverage results
         uses: actions/upload-artifact@v2
         with:
-          name: test.nox
+          name: qbittorrent-nox
           path: qb-build/completed/qbittorrent-nox
+          

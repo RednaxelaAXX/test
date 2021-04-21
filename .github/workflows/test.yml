@@ -1,4 +1,4 @@
-name: CI
+name: qb-icu-amd64
 on:
   workflow_dispatch:
 jobs:

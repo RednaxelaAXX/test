@@ -21,8 +21,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       - run: |
-          # sudo apt-get install python3-numpy
-          bash qbittorrent-nox-static.sh all
+            apk add bash
+            # sudo apt-get install python3-numpy
+            bash qbittorrent-nox-static.sh all
       - name: Archive code coverage results
         uses: actions/upload-artifact@v2
         with:

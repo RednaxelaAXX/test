@@ -1,6 +1,7 @@
 name: qb-amd64
 on:
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,6 +14,10 @@ jobs:
         with:
           image: tonistiigi/binfmt:latest
           platforms: arm64
+
+  container-job:
+    runs-on: ubuntu-latest
+    container: arm64v8:alpine
       - run: apk add bash
       - run: bash qbittorrent-nox-static.sh
       #- run: bash qbittorrent-nox-static.sh zlib

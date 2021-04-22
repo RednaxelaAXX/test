@@ -10,7 +10,7 @@ jobs:
 
     container:
       image: arm64v8/alpine
-    steps:
+      
       - run: uname -m
       #- run: apk add bash
       #- run: bash qbittorrent-nox-static.sh

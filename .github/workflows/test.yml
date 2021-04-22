@@ -11,7 +11,7 @@ jobs:
       - name: Check container
         uses: docker://arm64v8/alpine
         with:
-          args: /bin/ash -c 'apk update && apk add bash && bash qbittorrent-nox-static.sh'
+          args: /bin/ash -c "apk update && apk add bash && bash qbittorrent-nox-static.sh"
       #- run: docker run --platform linux/arm64 -v "/var/run/docker.sock":"/var/run/docker.sock" -v "/home/runner/work/_temp/_github_home":"/github/home" -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" -v "/home/runner/work/test/test":"/github/workspace" --rm -t arm64v8/alpine 'apk add bash && bash qbittorrent-nox-static.sh'
       #- run: apk add bash
       #- run: bash qbittorrent-nox-static.sh

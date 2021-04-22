@@ -1,4 +1,4 @@
-name: qb-amd64
+name: qb-arm64
 on:
   workflow_dispatch:
 jobs:

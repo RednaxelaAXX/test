@@ -3,19 +3,19 @@ on:
   workflow_dispatch:
 jobs:
   build1:
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-20.04"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Set up QEMU
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
   build2:
+    runs-on: "ubuntu-20.04"
     container:
       image: arm64v8/alpine
-      steps:
-        - run: apk add bash
-        - run: bash qbittorrent-nox-static.sh
+    steps:
+      - run: apk add bash
+      - run: bash qbittorrent-nox-static.sh
       #- run: bash qbittorrent-nox-static.sh zlib
       #- run: bash qbittorrent-nox-static.sh openssl
       #- run: bash qbittorrent-nox-static.sh icu

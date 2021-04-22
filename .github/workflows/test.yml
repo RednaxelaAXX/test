@@ -7,7 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-      - run: docker run --platform linux/arm64 -v /home/runner/work/test/test:$HOME --rm -t arm64v8/alpine apk add bash && cd /root && bash qbittorrent-nox-static.sh
+      - run: docker run --platform linux/arm64 -v /home/runner/work/test/test:$HOME --rm -t arm64v8/alpine apk add bash && cd $HOME && bash qbittorrent-nox-static.sh
       # - run: apk add bash
       # - run: bash qbittorrent-nox-static.sh
       #- run: bash qbittorrent-nox-static.sh zlib

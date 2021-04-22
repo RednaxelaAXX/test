@@ -50,7 +50,7 @@ what_version_id="$(source /etc/os-release && printf "%s" "${VERSION_ID}")"      
 if [[ "${what_id}" =~ ^(alpine)$ ]]; then # If alpine, set the codename to alpine. We check for min v3.10 later with codenames.
 	what_version_codename="alpine"
 fi
-"${what_version_codename}"
+echo "${what_version_codename}"
 exit
 #
 ## Check against allowed codenames or if the codename is alpine version greater thab 3.10

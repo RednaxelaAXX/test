@@ -9,8 +9,7 @@ jobs:
       - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
       - name: arm64v8 image
         uses: docker://arm64v8/alpine
-      - run: apk add bash
-      - run: bash qbittorrent-nox-static.sh
-
-        #with:
-        #  args: /bin/ash -c "apk update && apk add bash && bash qbittorrent-nox-static.sh all"
+        with:
+          args: --platform linux/arm64
+        run: apk add bash
+        run: bash qbittorrent-nox-static.sh

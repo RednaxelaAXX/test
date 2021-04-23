@@ -10,6 +10,5 @@ jobs:
       - name: arm64v8 image
         uses: docker://arm64v8/alpine
         with:
-          args: --platform linux/arm64
           run: apk add bash
           #run: bash qbittorrent-nox-static.sh

@@ -12,4 +12,4 @@ jobs:
         with:
           args: --platform linux/arm64
         run: apk add bash
-        run: bash qbittorrent-nox-static.sh
+        # run: bash qbittorrent-nox-static.sh

@@ -12,6 +12,10 @@ jobs:
       - run: curl -sL git.io/swizzin | sudo TERM=xterm bash -s - --unattend nginx panel --user username --pass password --skip-cracklib
       - run: git clone  https://github.com/gdraheim/docker-systemctl-replacement.git
       - run: sudo cp -f docker-systemctl-replacement/files/docker/systemctl.py /usr/bin/systemctl
-      - run: sudo systemctl restart panel
-      - run: sudo systemctl restart nginx
-
+      - run: sudo systemctl status panel
+      - run: sudo systemctl start panel
+      - run: sudo systemctl stop panel
+      - run: sudo systemctl status nginx
+      - run: sudo systemctl start nginx
+      - run: sudo systemctl stop nginx
+      

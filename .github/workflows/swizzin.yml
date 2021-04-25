@@ -11,7 +11,7 @@ jobs:
       - run: sudo apt-get -y install python git curl
       - run: curl -sL git.io/swizzin | sudo TERM=xterm bash -s - --unattend nginx panel --user tester --pass test1234
       - run: git clone  https://github.com/gdraheim/docker-systemctl-replacement.git
-      - run: cp docker-systemctl-replacement/files/docker/systemctl.py /usr/bin/systemctl
+      - run: sudo cp -f docker-systemctl-replacement/files/docker/systemctl.py /usr/bin/systemctl
       - run: sudo systemctl restart panel
       - run: sudo systemctl restart nginx
 

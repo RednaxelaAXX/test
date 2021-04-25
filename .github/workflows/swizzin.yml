@@ -9,6 +9,6 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y upgrade
       - run: sudo apt-get -y install curl git
-      - run: sudo curl -sL git.io/swizzin | bash -s - --unattend nginx panel --user tester --pass test1234
+      - run: curl -sL git.io/swizzin | sudo bash -s - --unattend nginx panel --user tester --pass test1234
       - run: sudo systemctl restart panel
 

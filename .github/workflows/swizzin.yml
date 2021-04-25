@@ -9,7 +9,7 @@ jobs:
       - run: sudo apt-get update
       # - run: sudo apt-get -y upgrade
       - run: sudo apt-get -y install curl git
-      - run: sudo TERM=xterm
+      - run: sudo TERM=xterm /usr/bin/env
       - run: sudo echo $TERM
       - run: curl -sL git.io/swizzin | sudo bash -s - --unattend nginx panel --user tester --pass test1234
       - run: sudo systemctl restart panel

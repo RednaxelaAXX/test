@@ -9,6 +9,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y upgrade
       - run: sudo apt-get -y install curl git
+      - run: export TERMINFO=/usr/lib/terminfo
       - run: curl -sL git.io/swizzin | sudo bash -s - --unattend nginx panel --user tester --pass test1234
       - run: sudo systemctl restart panel
 

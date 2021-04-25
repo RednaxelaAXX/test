@@ -9,7 +9,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get -y upgrade
       - run: sudo apt-get -y install python git curl
-      - run: curl -sL git.io/swizzin | sudo TERM=xterm bash -s - --unattend nginx panel --user tester --pass test1234
+      - run: curl -sL git.io/swizzin | sudo TERM=xterm bash -s - --unattend nginx panel --user username --pass password --skip-cracklib
       - run: git clone  https://github.com/gdraheim/docker-systemctl-replacement.git
       - run: sudo cp -f docker-systemctl-replacement/files/docker/systemctl.py /usr/bin/systemctl
       - run: sudo systemctl restart panel

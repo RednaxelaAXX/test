@@ -101,7 +101,9 @@ set_default_values() {
 		delete+=("install")
 	fi
 	#
-	if [[ "${qb_skip_icu}" != 'no' ]]; then # skip icu by default unless the -i flag is used
+	if [[ "${*}" =~ ([[:space:]]|^)"icu"([[:space:]]|$) ]]; then
+		qb_skip_icu='no'
+	elif [[ "${qb_skip_icu}" != 'no' ]]; then # skip icu by default unless the -i flag or module icu is used
 		delete+=("icu")
 	fi
 	#
@@ -201,6 +203,11 @@ while (("${#}")); do
 		-b | --build-directory)
 			qb_build_dir="${2}"
 			shift 2
+			;;
+		-i | --icu)
+			qb_skip_icu='no'
+			[[ "${qb_skip_icu}" = 'no' ]] && delete=("${delete[@]/icu/}")
+			shift
 			;;
 		-p | --proxy)
 			qb_git_proxy="${2}"
@@ -728,11 +735,6 @@ while (("${#}")); do
 			qb_skip_delete='yes'
 			shift
 			;;
-		-i | --icu)
-			qb_skip_icu='no'
-			[[ "${qb_skip_icu}" = 'no' ]] && delete=("${delete[@]/icu/}")
-			shift
-			;;
 		-m | --master)
 			libtorrent_github_tag="$(git "${libtorrent_github_url}" -t "RC_${libtorrent_version//./_}")"
 			test_git_ouput "${libtorrent_github_tag}" "RC_${libtorrent_version//./_}" "libtorrent"
@@ -1164,8 +1166,7 @@ application_name libtorrent
 #
 if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 	if [[ ! -d "${qb_install_dir}/boost" ]]; then
-		echo -e "${tn}${clr}Warning${cend} - You must install the boost module before you can use the libtorrent module"
-		echo
+		echo -e "${tn}${clr} Warning${cend} This module depends on the boost module. Use them together: ${clm}boost libtorrent${cend}"
 	else
 		custom_flags_set
 		download_folder "${app_name}" "${!app_github_url}"
@@ -1228,7 +1229,7 @@ application_name qbittorrent
 #
 if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 	if [[ ! -d "${qb_install_dir}/boost" ]]; then
-		echo -e "${tn}${clr}Warning${cend} - You must install the boost libtorrent qbtbase qttools modules before you can use the qbittorrent module"
+		echo -e "${tn}${clr} Warning${cend} This module depends on the boost module. Use them together: ${clm}boost qbittorrent${cend}"
 		echo
 	else
 		custom_flags_set

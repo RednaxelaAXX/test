@@ -1048,6 +1048,9 @@ if [[ "${!app_name_skip:-yes}" = 'no' || "${1}" = "${app_name}" ]]; then
 	#
 	./configure --prefix="${qb_install_dir}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
+	#
+	post_build
+	#
 	make install |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	delete_function "${app_name}"
@@ -1065,6 +1068,9 @@ if [[ "${!app_name_skip:-yes}" = 'no' || "$1" = "${app_name}" ]]; then
 	#
 	./configure --prefix="$qb_install_dir" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
+	#
+	post_build
+	#
 	make install |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	delete_function "${app_name}"
@@ -1084,6 +1090,9 @@ if [[ "${!app_name_skip:-yes}" = 'no' || "${1}" = "${app_name}" ]]; then
 	_cd "${app_dir}/build"
 	"${app_dir}/configure" --prefix="${qb_install_dir}" --enable-static-nss |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" |& tee -a "${qb_install_dir}/logs/$app_name.log.txt"
+	#
+	post_build
+	#
 	make install |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	delete_function "${app_name}"
@@ -1101,6 +1110,9 @@ if [[ "${!app_name_skip:-yes}" = 'no' || "${1}" = "${app_name}" ]]; then
 	#
 	./configure --prefix="${qb_install_dir}" --static |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
+	#
+	post_build
+	#
 	make install |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	delete_function "${app_name}"
@@ -1118,6 +1130,9 @@ if [[ "${!app_name_skip:-yes}" = 'no' || "${1}" = "${app_name}" ]]; then
 	#
 	./configure --prefix="${qb_install_dir}" --disable-shared --enable-static CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
+	#
+	post_build
+	#
 	make install |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	delete_function "${app_name}"
@@ -1135,6 +1150,9 @@ if [[ "${!app_name_skip:-yes}" = 'no' || "${1}" = "${app_name}" ]]; then
 	#
 	./config --prefix="${qb_install_dir}" --openssldir="/etc/ssl" threads no-shared no-dso no-comp CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
+	#
+	post_build
+	#
 	make install_sw install_ssldirs |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	delete_function "${app_name}"
@@ -1231,6 +1249,9 @@ if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 	#
 	"${qb_install_dir}/bin/qmake" QMAKE_CXXFLAGS="-static" QMAKE_LFLAGS="-static" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
+	#
+	post_build
+	#
 	make install |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	delete_function "${app_name}"

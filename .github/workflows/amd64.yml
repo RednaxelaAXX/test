@@ -12,6 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: apk add bash
+        shell: ash {0}
       - run: bash qbittorrent-nox-static.sh
       ##- run: bash qbittorrent-nox-static.sh zlib
       ##- run: bash qbittorrent-nox-static.sh openssl

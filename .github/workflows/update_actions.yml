@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           # Access token with `workflow` scope is required
-          token: ${{ secrets.WORKFLOW_SECRET }}
+          token: ${{ secrets.SECRET_SECRET }}
       - name: Run GitHub Actions Version Updater
         uses: saadmk11/github-actions-version-updater@v0.5.6
         with:
@@ -24,7 +24,7 @@ jobs:
           committer_username: "test"
           committer_email: "test@test.com"
           # Access token with `workflow` scope is required
-          token: ${{ secrets.WORKFLOW_SECRET }}
+          token: ${{ secrets.SECRET_SECRET }}
           # Do not update these actions (Optional)
           # You need to add JSON array inside a string
           # because GitHub Actions does not yet allow `Lists` as input

@@ -4,13 +4,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     container:
       image: alpine:latest
     steps:
       - uses: actions/checkout@v2
       - run: apk add bash
       - run: bash qbittorrent-nox-static.sh
-        shell: bash {0}
       ##- run: bash qbittorrent-nox-static.sh zlib
       ##- run: bash qbittorrent-nox-static.sh openssl
       # - run: bash qbittorrent-nox-static.sh icu

@@ -21,8 +21,8 @@ jobs:
         with:
           # Optional, This will be used to configure git
           # defaults to `github-actions[bot]` if not provided
-          committer_username: "test"
-          committer_email: "test@test.com"
+          committer_username: "userdocs"
+          committer_email: "16525024+userdocs@users.noreply.github.com"
           # Access token with `workflow` scope is required
           token: ${{ secrets.SECRET_SECRET }}
           # Do not update these actions (Optional)

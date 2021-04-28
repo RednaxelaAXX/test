@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: apk add bash
-      - run: ./qbittorrent-nox-static.sh
+      - run: bash qbittorrent-nox-static.sh
         shell: bash {0}
       ##- run: bash qbittorrent-nox-static.sh zlib
       ##- run: bash qbittorrent-nox-static.sh openssl

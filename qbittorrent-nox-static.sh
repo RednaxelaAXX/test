@@ -711,10 +711,10 @@ post_build() {
 # Multi arch cross build
 #######################################################################################################################################################
 _multi_arch() {
-	CROSS_HOST_ARCH="${CROSS_HOST_ARCH}"
-	CROSS_OPENSSL="${CROSS_OPENSSL}"
-	CROSS_QT_DEVICE="${CROSS_QT_DEVICE}"
-	CROSS_QT_XPLATFORM="${CROSS_QT_XPLATFORM}"
+	CROSS_HOST_ARCH="${CROSS_HOST_ARCH:-}"
+	CROSS_OPENSSL="${CROSS_OPENSSL:-}"
+	CROSS_QT_DEVICE="${CROSS_QT_DEVICE:-}"
+	CROSS_QT_XPLATFORM="${CROSS_QT_XPLATFORM:-}"
 	CHOST="${CROSS_HOST_ARCH}"
 	#
 	[[ ! -f "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" ]] && curl "https://musl.cc/${CROSS_HOST_ARCH}-cross.tgz" > "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz"

@@ -726,8 +726,6 @@ _multi_arch() {
 	#
 	multi_qt=("-device ${CROSS_QT}" "-device-option ${qb_install_dir}/arch/bin " CROSS_COMPILE="${CROSS_HOST_ARCH}" "-sysroot ${qb_install_dir}/arch/${CROSS_HOST_ARCH}") # ${multi_qt[@]}
 	multi_qb=("--host=${CROSS_HOST_ARCH}")                                                                                                                                # ${multi_qb[@]}
-	#
-	echo "$PATH"
 	return
 }
 #######################################################################################################################################################

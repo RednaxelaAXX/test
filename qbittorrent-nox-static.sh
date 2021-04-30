@@ -711,10 +711,11 @@ post_build() {
 # Multi arch cross build
 #######################################################################################################################################################
 _multi_arch() {
-	CROSS_HOST_ARCH="${CROSS_HOST_ARCH:-x86_64-linux-musl}"
-	CROSS_OPENSSL="${CROSS_OPENSSL:-linux-x86_64}"
-	CROSS_QT="${CROSS_QT:-linux-generic-g++}"
-	CHOST="${CROSS_HOST_ARCH:-x86_64-linux-musl}"
+	CROSS_HOST_ARCH="${CROSS_HOST_ARCH}"
+	CROSS_OPENSSL="${CROSS_OPENSSL}"
+	CROSS_QT_DEVICE="${CROSS_QT_DEVICE}"
+	CROSS_QT_XPLATFORM="${CROSS_QT_XPLATFORM}"
+	CHOST="${CROSS_HOST_ARCH}"
 	#
 	[[ ! -f "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" ]] && curl "https://musl.cc/${CROSS_HOST_ARCH}-cross.tgz" > "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz"
 	tar xf "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" --strip-components=1 -C "${qb_install_dir}"
@@ -724,8 +725,8 @@ _multi_arch() {
 	echo -e "using gcc : cross : ${CROSS_HOST_ARCH}-g++ : <cflags>${optimize/*/$optimize }-std=${standard} <cxxflags>${optimize/*/$optimize }-std=${standard} ;${tn}using python : ${python_short_version} : /usr/bin/python${python_short_version} : /usr/include/python${python_short_version} : /usr/lib/python${python_short_version} ;" > "$HOME/user-config.jam"
 	multi_b2=("toolset=gcc-cross") # ${multi_b2[@]}
 	#
-	multi_qt=("-device ${CROSS_QT}" "-device-option ${qb_install_dir}/arch/bin " CROSS_COMPILE="${CROSS_HOST_ARCH}" "-sysroot ${qb_install_dir}/arch/${CROSS_HOST_ARCH}") # ${multi_qt[@]}
-	multi_qb=("--host=${CROSS_HOST_ARCH}")                                                                                                                                # ${multi_qb[@]}
+	multi_qt=("-xplatform ${CROSS_QT_XPLATFORM}" "-device ${CROSS_QT_DEVICE}" "-device-option CROSS_COMPILE=${CROSS_HOST_ARCH}-" "-sysroot ${qb_install_dir}/arch/${CROSS_HOST_ARCH}") # ${multi_qt[@]}
+	multi_qb=("--host=${CROSS_HOST_ARCH}")                                                                                                                                             # ${multi_qb[@]}
 	return
 }
 #######################################################################################################################################################

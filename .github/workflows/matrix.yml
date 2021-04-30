@@ -1,0 +1,46 @@
+name: matrix
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    container: alpine:latest
+    strategy: # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategy
+      fail-fast: false # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
+      matrix: # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
+        include:
+          - cross_host: aarch64-linux-musl # https://musl.cc/#binaries
+            openssl_compiler: linux-aarch64 # ./Configure LIST
+            qt_device: linux-arm-generic-g++
+          - cross_host: x86_64-linux-musl # https://musl.cc/#binaries
+            openssl_compiler: linux-x86_64 # ./Configure LIST
+            qt_device: linux-generic-g++
+    steps:
+      - uses: actions/checkout@v2.3.4
+        env:
+          ACTION_MULTI_ARCH: "yes"
+          CROSS_ARCH: "${{ matrix.cross_host }}"
+          CROSS_OPENSSL: "${{ matrix.openssl_compiler }}"
+          CROSS_QT: "${{ matrix.qt_device }}"
+      - run: apk add bash
+        shell: ash {0}
+      - run: bash qbittorrent-nox-static.sh
+      - run: bash qbittorrent-nox-static.sh zlib
+      - run: bash qbittorrent-nox-static.sh openssl
+      # - run: bash qbittorrent-nox-static.sh icu
+      - run: bash qbittorrent-nox-static.sh boost
+      - run: bash qbittorrent-nox-static.sh libtorrent
+      # - run: bash qbittorrent-nox-static.sh libtorrent -pr userdocs/qbittorrent-nox-static
+      - run: bash qbittorrent-nox-static.sh qtbase
+      # - run: bash qbittorrent-nox-static.sh qtbase -i
+      - run: bash qbittorrent-nox-static.sh qttools
+      - run: bash qbittorrent-nox-static.sh qbittorrent
+      # - run: bash qbittorrent-nox-static.sh qbittorrent -pr userdocs/qbittorrent-nox-static
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2.2.3
+        with:
+          name: "qbittorrent-nox-${{ matrix.openssl_compiler }}"
+          path: qb-build/completed/qbittorrent-nox

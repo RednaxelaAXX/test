@@ -18,13 +18,13 @@ jobs:
           - cross_host: x86_64-linux-musl # https://musl.cc/#binaries
             openssl_compiler: linux-x86_64 # ./Configure LIST
             qt_device: linux-generic-g++
+    env:
+      ACTION_MULTI_ARCH: "yes"
+      CROSS_HOST_ARCH: "${{ matrix.cross_host }}"
+      CROSS_OPENSSL: "${{ matrix.openssl_compiler }}"
+      CROSS_QT: "${{ matrix.qt_device }}"
     steps:
       - uses: actions/checkout@v2.3.4
-        env:
-          ACTION_MULTI_ARCH: "yes"
-          CROSS_HOST_ARCH: "${{ matrix.cross_host }}"
-          CROSS_OPENSSL: "${{ matrix.openssl_compiler }}"
-          CROSS_QT: "${{ matrix.qt_device }}"
       - run: apk add bash
         shell: ash {0}
       - run: bash qbittorrent-nox-static.sh

@@ -716,7 +716,7 @@ _multi_arch() {
 	CROSS_QT="${CROSS_QT:-linux-generic-g++}"
 	CHOST="${CROSS_HOST_ARCH:-x86_64-linux-musl}"
 	#
-	[[ ! -f "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" ]] && curl -sL "https://musl.cc/${CROSS_HOST_ARCH}-cross.tgz" > "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz"
+	[[ ! -f "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" ]] && curl "https://musl.cc/${CROSS_HOST_ARCH}-cross.tgz" > "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz"
 	tar xf "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" --strip-components=1 -C "${qb_install_dir}"
 	#
 	multi_openssl=("--cross-compile-prefix=${CROSS_HOST_ARCH}" "${CROSS_OPENSSL}") # ${multi_openssl[@]}

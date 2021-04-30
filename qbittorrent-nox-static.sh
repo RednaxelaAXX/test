@@ -740,6 +740,9 @@ set_build_directory # see functions
 set_module_urls # see functions
 #
 [[ "${ACTION_MULTI_ARCH}" == 'yes' ]] && _multi_arch
+
+echo $ACTION_MULTI_ARCH
+exit
 #######################################################################################################################################################
 # This section controls our flags that we can pass to the script to modify some variables and behavior.
 #######################################################################################################################################################

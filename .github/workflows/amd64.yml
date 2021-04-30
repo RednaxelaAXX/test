@@ -7,8 +7,17 @@ jobs:
     defaults:
       run:
         shell: bash
-    container:
-      image: alpine:latest
+    container: alpine:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cross_host: aarch64-linux-musl
+            openssl_compiler: linux-aarch64
+            qt_device: linux-arm-generic-g++
+          - cross_host: x86_64-linux-musl
+            openssl_compiler: linux-x86_64
+            qt_device: linux-generic-g++
     steps:
       - uses: actions/checkout@v2.3.4
       - run: apk add bash

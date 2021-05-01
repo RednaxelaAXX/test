@@ -18,7 +18,6 @@ jobs:
       CROSS_HOST_ARCH: "${{ matrix.cross_host }}"
     steps:
       - uses: actions/checkout@v2.3.4
-      - run: whoami
       - run: sudo -E bash qbittorrent-nox-static.sh # bootstrap 1
         #
       - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh # bootstrap 2

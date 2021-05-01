@@ -731,7 +731,7 @@ _multi_arch() {
 		proot -q "qemu-${qb_arch}-static" -S "${multi_arch_dir}" apk add bash
 		#
 		touch "${qb_install_dir}/multiarch.lock"
-		chmod -R runner:runner "${qb_install_dir}"
+		chown runner:runner "${qb_install_dir}"
 		exit
 	fi
 }

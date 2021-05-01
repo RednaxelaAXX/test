@@ -7,40 +7,30 @@ jobs:
     defaults:
       run:
         shell: bash
-    container: alpine:latest
-    strategy: # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategy
-      fail-fast: false # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast
-      matrix: # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idstrategymatrix
+    strategy:
+      fail-fast: false
+      matrix:
         include:
-          - cross_host: aarch64-linux-musl # https://musl.cc/#binaries
-            cross_openssl: linux-aarch64 # ./Configure LIST
-            cross_qt_device: linux-arm-generic-g++
-            cross_qt_xplatform: linux-aarch64-gnu-g++
-          - cross_host: x86_64-linux-musl # https://musl.cc/#binaries
-            cross_openssl: linux-x86_64 # ./Configure LIST
-            cross_qt_device: linux-generic-g++
-            cross_qt_xplatform: linux-g++-64
+          - cross_host: aarch64
+          - cross_host: x86_64
     env:
       ACTION_MULTI_ARCH: "yes"
       CROSS_HOST_ARCH: "${{ matrix.cross_host }}"
-      CROSS_OPENSSL: "${{ matrix.cross_openssl }}"
-      CROSS_QT_DEVICE: "${{ matrix.cross_qt_device }}"
-      CROSS_QT_XPLATFORM: "${{ matrix.cross_qt_xplatform }}"
     steps:
       - uses: actions/checkout@v2.3.4
-      - run: apk add bash
-        shell: ash {0}
-      - run: bash qbittorrent-nox-static.sh
-      - run: bash qbittorrent-nox-static.sh zlib
-      - run: bash qbittorrent-nox-static.sh openssl
-      # - run: bash qbittorrent-nox-static.sh icu
-      #- run: bash qbittorrent-nox-static.sh boost
-      #- run: bash qbittorrent-nox-static.sh libtorrent
-      # - run: bash qbittorrent-nox-static.sh libtorrent -pr userdocs/qbittorrent-nox-static
-      - run: bash qbittorrent-nox-static.sh qtbase
+      - run: bash qbittorrent-nox-static.sh # bootstrap 1
+        #
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh # bootstrap 2
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh zlib
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh openssl
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh icu
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh boost
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh libtorrent
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh libtorrent -pr userdocs/qbittorrent-nox-static
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh qtbase
       # - run: bash qbittorrent-nox-static.sh qtbase -i
-      - run: bash qbittorrent-nox-static.sh qttools
-      - run: bash qbittorrent-nox-static.sh qbittorrent
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh qttools
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "${multi_arch_dir}" bash qbittorrent-nox-static.sh qbittorrent
       # - run: bash qbittorrent-nox-static.sh qbittorrent -pr userdocs/qbittorrent-nox-static
       - name: Archive code coverage results
         uses: actions/upload-artifact@v2.2.3

@@ -94,7 +94,11 @@ set_default_values() {
 	fi
 	#
 	if [[ "${what_id}" =~ ^(debian|ubuntu)$ ]]; then # if debian based then set the required packages array
-		qb_required_pkgs=("build-essential" "curl" "pkg-config" "automake" "libtool" "git" "perl" "python${qb_python_version}" "python${qb_python_version}-dev" "python${qb_python_version}-numpy")
+		qb_required_pkgs=("build-essential" "curl" "pkg-config" "automake" "libtool" "git" "perl" "python${qb_python_version}" "python${qb_python_version}-dev" "python${qb_python_version}-numpy" "proot" "qemu" "binfmt-support" "qemu-user-static")
+	fi
+	#
+	if [[ ${ACTION_MULTI_ARCH} != 'yes' ]]; then # install the multiarch stuff we need for out github actions matrix builds
+		delete+=("proot" "qemu" "binfmt-support" "qemu-user-static")
 	fi
 	#
 	if [[ "${1}" != 'install' ]]; then # remove this module by default unless provided as a first argument to the script.
@@ -711,23 +715,24 @@ post_build() {
 # Multi arch cross build
 #######################################################################################################################################################
 _multi_arch() {
-	CROSS_HOST_ARCH="${CROSS_HOST_ARCH:-}"
-	CROSS_OPENSSL="${CROSS_OPENSSL:-}"
-	CROSS_QT_DEVICE="${CROSS_QT_DEVICE:-}"
-	CROSS_QT_XPLATFORM="${CROSS_QT_XPLATFORM:-}"
-	CHOST="${CROSS_HOST_ARCH}"
-	#
-	[[ ! -f "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" ]] && curl "https://musl.cc/${CROSS_HOST_ARCH}-cross.tgz" > "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz"
-	tar xf "${qb_install_dir}/${CROSS_HOST_ARCH}-cross.tgz" --strip-components=1 -C "${qb_install_dir}"
-	#
-	multi_openssl=("--cross-compile-prefix=${CROSS_HOST_ARCH}-" "${CROSS_OPENSSL}") # ${multi_openssl[@]}
-	#
-	echo -e "using gcc : cross : ${CROSS_HOST_ARCH}-g++ : <cflags>${optimize/*/$optimize }-std=${standard} <cxxflags>${optimize/*/$optimize }-std=${standard} ;${tn}using python : ${python_short_version} : /usr/bin/python${python_short_version} : /usr/include/python${python_short_version} : /usr/lib/python${python_short_version} ;" > "$HOME/user-config.jam"
-	multi_b2=("toolset=gcc-cross") # ${multi_b2[@]}
-	#
-	multi_qt=("-xplatform" "linux-aarch64-gnu-g++") # ${multi_qt[@]}
-	multi_qb=("--host=${CROSS_HOST_ARCH}")          # ${multi_qb[@]}
-	return
+	if [[ ! -f "${qb_install_dir}/multiarch.lock" ]]; then
+		echo -e "${tn}${clr} Installing multiarch${cend}${tn}"
+		qb_arch="${CROSS_HOST_ARCH}"
+		alpine_v="$(git_git ls-remote -t --refs https://github.com/alpinelinux/aports.git | awk '/v3/{sub("refs/tags/v", "");sub("(.*)(_)(.*)", ""); print $2 }' | awk '!/^$/' | sort -rV | head -n 1)"
+		multi_arch_dir="${qb_install_dir}/multiarch"
+		#
+		mkdir -p "${multi_arch_dir}"
+		#
+		curl "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${qb_arch}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" > "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz"
+		tar xf "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" -C "${multi_arch_dir}"
+		#
+		cp -f /etc/resolv.conf "${multi_arch_dir}/etc/"
+		#
+		proot -q "qemu-${qb_arch}-static" -S "${multi_arch_dir}" apk add bash
+		#
+		touch "${qb_install_dir}/multiarch.lock"
+		return
+	fi
 }
 #######################################################################################################################################################
 # Functions part 1: Use some of our functions
@@ -1059,7 +1064,9 @@ eval set -- "${params2[@]}" # Set positional arguments in their proper place.
 #######################################################################################################################################################
 installation_modules "${@}" # see functions
 #
-[[ "${ACTION_MULTI_ARCH}" == 'yes' ]] && _multi_arch
+if [[ "${ACTION_MULTI_ARCH}" == 'yes' && ! -f "${qb_install_dir}/multiarch.lock" ]]; then
+	_multi_arch
+fi
 #######################################################################################################################################################
 # bison installation
 #######################################################################################################################################################
@@ -1171,7 +1178,7 @@ if [[ "${!app_name_skip:-yes}" = 'no' || "${1}" = "${app_name}" ]]; then
 	custom_flags_set
 	download_file "${app_name}" "${!app_url}"
 	#
-	./Configure "${multi_openssl[@]}" --prefix="${qb_install_dir}" --openssldir="/etc/ssl" threads no-shared no-dso no-comp CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
+	./config --prefix="${qb_install_dir}" --openssldir="/etc/ssl" threads no-shared no-dso no-comp CXXFLAGS="${CXXFLAGS}" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	post_build
@@ -1228,7 +1235,7 @@ if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 		BOOST_INCLUDEDIR="${qb_install_dir}/boost"
 		BOOST_BUILD_PATH="${qb_install_dir}/boost"
 		#
-		"${qb_install_dir}/boost/b2" -j"$(nproc)" address-model="$(getconf LONG_BIT)" "${lt_debug}" "${multi_b2[@]}" optimization=speed cxxstd=17 dht=on encryption=on crypto=openssl i2p=on extensions=on variant=release threading=multi link=static boost-link=static cxxflags="${CXXFLAGS}" cflags="${CPPFLAGS}" linkflags="${LDFLAGS}" install --prefix="${qb_install_dir}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
+		"${qb_install_dir}/boost/b2" -j"$(nproc)" address-model="$(getconf LONG_BIT)" "${lt_debug}" optimization=speed cxxstd=17 dht=on encryption=on crypto=openssl i2p=on extensions=on variant=release threading=multi link=static boost-link=static cxxflags="${CXXFLAGS}" cflags="${CPPFLAGS}" linkflags="${LDFLAGS}" install --prefix="${qb_install_dir}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 		#
 		post_build
 		#
@@ -1248,7 +1255,7 @@ if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 	#
 	[[ "${qb_skip_icu}" = 'no' ]] && icu='-icu' || icu='-no-icu'
 	#
-	./configure "${multi_qt[@]}" -prefix "${qb_install_dir}" "${icu}" -opensource -confirm-license -release -openssl-linked -static -c++std ${standard} -qt-pcre -no-iconv -no-feature-glib -no-feature-opengl -no-feature-dbus -no-feature-gui -no-feature-widgets -no-feature-testlib -no-compile-examples -I "${include_dir}" -L "${lib_dir}" QMAKE_LFLAGS="${LDFLAGS}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
+	./configure -prefix "${qb_install_dir}" "${icu}" -opensource -confirm-license -release -openssl-linked -static -c++std ${standard} -qt-pcre -no-iconv -no-feature-glib -no-feature-opengl -no-feature-dbus -no-feature-gui -no-feature-widgets -no-feature-testlib -no-compile-examples -I "${include_dir}" -L "${lib_dir}" QMAKE_LFLAGS="${LDFLAGS}" |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
 	make -j"$(nproc)" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 	#
 	post_build
@@ -1303,7 +1310,7 @@ if [[ "${!app_name_skip:-yes}" = 'no' ]] || [[ "${1}" = "${app_name}" ]]; then
 		fi
 		#
 		./bootstrap.sh |& tee "${qb_install_dir}/logs/${app_name}.log.txt"
-		./configure "${multi_qb[@]}" --prefix="${qb_install_dir}" "${qb_debug}" --with-boost="${qb_install_dir}/boost" --with-boost-libdir="${lib_dir}" openssl_CFLAGS="${include_dir}" openssl_LIBS="${lib_dir}" --disable-gui CXXFLAGS="${CXXFLAGS} -I${qb_install_dir}/boost" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS} -l:libboost_system.a" openssl_CFLAGS="-I${include_dir}" openssl_LIBS="-L${lib_dir} -l:libcrypto.a -l:libssl.a" libtorrent_CFLAGS="-I${include_dir}" libtorrent_LIBS="${libtorrent_libs}" zlib_CFLAGS="-I${include_dir}" zlib_LIBS="-L${lib_dir} -l:libz.a" QT_QMAKE="${qb_install_dir}/bin" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
+		./configure --prefix="${qb_install_dir}" "${qb_debug}" --with-boost="${qb_install_dir}/boost" --with-boost-libdir="${lib_dir}" openssl_CFLAGS="${include_dir}" openssl_LIBS="${lib_dir}" --disable-gui CXXFLAGS="${CXXFLAGS} -I${qb_install_dir}/boost" CPPFLAGS="${CPPFLAGS}" LDFLAGS="${LDFLAGS} -l:libboost_system.a" openssl_CFLAGS="-I${include_dir}" openssl_LIBS="-L${lib_dir} -l:libcrypto.a -l:libssl.a" libtorrent_CFLAGS="-I${include_dir}" libtorrent_LIBS="${libtorrent_libs}" zlib_CFLAGS="-I${include_dir}" zlib_LIBS="-L${lib_dir} -l:libz.a" QT_QMAKE="${qb_install_dir}/bin" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 		#
 		make -j"$(nproc)" |& tee -a "${qb_install_dir}/logs/${app_name}.log.txt"
 		#

@@ -34,8 +34,8 @@ jobs:
       - run: bash qbittorrent-nox-static.sh zlib
       - run: bash qbittorrent-nox-static.sh openssl
       # - run: bash qbittorrent-nox-static.sh icu
-      - run: bash qbittorrent-nox-static.sh boost
-      - run: bash qbittorrent-nox-static.sh libtorrent
+      #- run: bash qbittorrent-nox-static.sh boost
+      #- run: bash qbittorrent-nox-static.sh libtorrent
       # - run: bash qbittorrent-nox-static.sh libtorrent -pr userdocs/qbittorrent-nox-static
       - run: bash qbittorrent-nox-static.sh qtbase
       # - run: bash qbittorrent-nox-static.sh qtbase -i

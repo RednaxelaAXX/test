@@ -725,8 +725,8 @@ _multi_arch() {
 	echo -e "using gcc : cross : ${CROSS_HOST_ARCH}-g++ : <cflags>${optimize/*/$optimize }-std=${standard} <cxxflags>${optimize/*/$optimize }-std=${standard} ;${tn}using python : ${python_short_version} : /usr/bin/python${python_short_version} : /usr/include/python${python_short_version} : /usr/lib/python${python_short_version} ;" > "$HOME/user-config.jam"
 	multi_b2=("toolset=gcc-cross") # ${multi_b2[@]}
 	#
-	multi_qt=("-device-option" "CROSS_COMPILE=${CROSS_HOST_ARCH}-") # ${multi_qt[@]}
-	multi_qb=("--host=${CROSS_HOST_ARCH}")                          # ${multi_qb[@]}
+	multi_qt=("-xplatform" "linux-aarch64-gnu-g++") # ${multi_qt[@]}
+	multi_qb=("--host=${CROSS_HOST_ARCH}")          # ${multi_qb[@]}
 	return
 }
 #######################################################################################################################################################

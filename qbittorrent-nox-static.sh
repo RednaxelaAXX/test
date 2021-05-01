@@ -716,7 +716,7 @@ post_build() {
 #######################################################################################################################################################
 _multi_arch() {
 	if [[ ! -f "${qb_install_dir}/multiarch.lock" ]]; then
-		echo -e "${tn}${clr} Installing multiarch${cend}${tn}"
+		echo -e "${tn}${clr} Installing multiarch stuff ${cend}${tn}"
 		qb_arch="${CROSS_HOST_ARCH}"
 		alpine_v="$(git_git ls-remote -t --refs https://github.com/alpinelinux/aports.git | awk '/v3/{sub("refs/tags/v", "");sub("(.*)(_)(.*)", ""); print $2 }' | awk '!/^$/' | sort -rV | head -n 1)"
 		multi_arch_dir="${qb_install_dir}/multiarch"
@@ -731,7 +731,7 @@ _multi_arch() {
 		proot -q "qemu-${qb_arch}-static" -S "${multi_arch_dir}" apk add bash
 		#
 		touch "${qb_install_dir}/multiarch.lock"
-		return
+		exit
 	fi
 }
 #######################################################################################################################################################
@@ -1062,11 +1062,11 @@ eval set -- "${params2[@]}" # Set positional arguments in their proper place.
 #######################################################################################################################################################
 # Functions part 3: Use some of our functions
 #######################################################################################################################################################
-installation_modules "${@}" # see functions
-#
 if [[ "${ACTION_MULTI_ARCH}" == 'yes' && ! -f "${qb_install_dir}/multiarch.lock" ]]; then
 	_multi_arch
 fi
+#
+installation_modules "${@}" # see functions
 #######################################################################################################################################################
 # bison installation
 #######################################################################################################################################################

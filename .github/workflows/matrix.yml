@@ -12,8 +12,7 @@ jobs:
       matrix:
         include:
           - cross_host: aarch64
-          - cross_host: armhf
-          - cross_host: armv7
+          - cross_host: arm
     env:
       ACTION_MULTI_ARCH: "yes"
       CROSS_HOST_ARCH: "${{ matrix.cross_host }}"

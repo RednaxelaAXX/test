@@ -724,22 +724,24 @@ post_build() {
 _multi_arch() {
 	if [[ ! -f "${qb_install_dir}/multiarch.lock" ]]; then
 		echo -e "${tn}${clr} Installing multiarch stuff ${cend}${tn}"
-		qb_arch="${CROSS_HOST_ARCH}"
+		#
+		qemu_arch="${CROSS_HOST_ARCH}"
+		#
+		[[ "${qb_arch}" == 'arm' ]] && alpine_arch="armhf" || alpine_arch="${CROSS_HOST_ARCH}"
+		#
 		alpine_v="$(git_git ls-remote -t --refs https://github.com/alpinelinux/aports.git | awk '/v3/{sub("refs/tags/v", "");sub("(.*)(_)(.*)", ""); print $2 }' | awk '!/^$/' | sort -rV | head -n 1)"
 		multi_arch_dir="${qb_install_dir}/multiarch"
 		#
 		mkdir -p "${multi_arch_dir}"
 		#
-		echo "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${qb_arch}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz"
-		curl "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${qb_arch}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" > "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz"
-		if tar xf "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" -C "${multi_arch_dir}"; then
+		echo "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${alpine_arch}/alpine-minirootfs-${alpine_v}-${alpine_arch}.tar.gz"
+		curl "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${alpine_arch}/alpine-minirootfs-${alpine_v}-${alpine_arch}.tar.gz" > "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${alpine_arch}.tar.gz"
+		if tar xf "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${alpine_arch}.tar.gz" -C "${multi_arch_dir}"; then
 			touch "${qb_install_dir}/multiarch.lock"
 		fi
 		cp -f /etc/resolv.conf "${multi_arch_dir}/etc/"
 		#
-		[[ "${qb_arch}" == 'armhf' ]] && qb_arch="arm"
-		#
-		proot -q "qemu-${qb_arch}-static" -S "${multi_arch_dir}" apk add bash
+		proot -q "qemu-${qemu_arch}-static" -S "${multi_arch_dir}" apk add bash
 		#
 		exit
 	fi

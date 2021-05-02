@@ -724,7 +724,7 @@ post_build() {
 _multi_arch() {
 	if [[ ! -f "${qb_install_dir}/multiarch.lock" ]]; then
 		echo -e "${tn}${clr} Installing multiarch stuff ${cend}${tn}"
-		qb_arch="${CROSS_HOST_ARCH:-aarch64}"
+		qb_arch="${CROSS_HOST_ARCH}"
 		alpine_v="$(git_git ls-remote -t --refs https://github.com/alpinelinux/aports.git | awk '/v3/{sub("refs/tags/v", "");sub("(.*)(_)(.*)", ""); print $2 }' | awk '!/^$/' | sort -rV | head -n 1)"
 		multi_arch_dir="${qb_install_dir}/multiarch"
 		#

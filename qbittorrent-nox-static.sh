@@ -737,6 +737,8 @@ _multi_arch() {
 		fi
 		cp -f /etc/resolv.conf "${multi_arch_dir}/etc/"
 		#
+		[[ "${qb_arch}" == 'armhf' ]] && qb_arch="arm"
+		#
 		proot -q "qemu-${qb_arch}-static" -S "${multi_arch_dir}" apk add bash
 		#
 		exit

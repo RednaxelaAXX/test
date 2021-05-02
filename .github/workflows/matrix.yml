@@ -18,21 +18,17 @@ jobs:
       CROSS_HOST_ARCH: "${{ matrix.cross_host }}"
     steps:
       - uses: actions/checkout@v2.3.4
-      - run: sudo -E bash qbittorrent-nox-static.sh # bootstrap 1
+      - run: RUNNER_ALLOW_RUNASROOT="1" bash qbittorrent-nox-static.sh # bootstrap 1
         #
-      - run: sudo proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh # bootstrap 2
-        #
-      - run: sudo proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh zlib
-      - run: sudo proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh openssl
-      - run: sudo proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh icu
-      - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh boost
-      - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh libtorrent
-      - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh libtorrent -pr userdocs/qbittorrent-nox-static
-      - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qtbase
-      # - run: bash qbittorrent-nox-static.sh qtbase -i
-      - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qttools
-      - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qbittorrent
-      # - run: bash qbittorrent-nox-static.sh qbittorrent -pr userdocs/qbittorrent-nox-static
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh # bootstrap 2
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh zlib
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh openssl
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh icu
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh boost
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh libtorrent
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qtbase
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qttools
+      - run: proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qbittorrent
       - name: Archive code coverage results
         uses: actions/upload-artifact@v2.2.3
         with:

@@ -98,7 +98,7 @@ set_default_values() {
 	fi
 	#
 	if [[ ${ACTION_MULTI_ARCH} != 'yes' ]]; then # install the multiarch stuff we need for out github actions matrix builds
-		delete+=("proot" "qemu" "binfmt-support" "qemu-user-static")
+		delete_pkg+=("proot" "qemu" "binfmt-support" "qemu-user-static")
 	fi
 	#
 	if [[ "${1}" != 'install' ]]; then # remove this module by default unless provided as a first argument to the script.
@@ -122,6 +122,15 @@ set_default_values() {
 #######################################################################################################################################################
 check_dependencies() {
 	echo -e "${tn}${tb}Checking if required core dependencies are installed${cend}${tn}"
+	#
+	## remove packages listed in the delete_pkg array from the qb_required_pkgs array
+	for target in "${delete_pkg[@]}"; do
+		for i in "${!qb_required_pkgs[@]}"; do
+			if [[ "${qb_required_pkgs[i]}" = "${target}" ]]; then
+				unset 'qb_required_pkgs[i]'
+			fi
+		done
+	done
 	#
 	for pkg in "${qb_required_pkgs[@]}"; do
 		#
@@ -723,6 +732,7 @@ _multi_arch() {
 		#
 		mkdir -p "${multi_arch_dir}"
 		#
+		echo "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${qb_arch}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz"
 		curl "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${qb_arch}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" > "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz"
 		tar xf "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" -C "${multi_arch_dir}"
 		#

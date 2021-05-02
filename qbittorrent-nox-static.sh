@@ -727,7 +727,7 @@ _multi_arch() {
 		#
 		qemu_arch="${CROSS_HOST_ARCH}"
 		#
-		[[ "${qb_arch}" == 'arm' ]] && alpine_arch="armhf" || alpine_arch="${CROSS_HOST_ARCH}"
+		[[ "${qemu_arch}" == 'arm' ]] && alpine_arch="armhf" || alpine_arch="${qemu_arch}"
 		#
 		alpine_v="$(git_git ls-remote -t --refs https://github.com/alpinelinux/aports.git | awk '/v3/{sub("refs/tags/v", "");sub("(.*)(_)(.*)", ""); print $2 }' | awk '!/^$/' | sort -rV | head -n 1)"
 		multi_arch_dir="${qb_install_dir}/multiarch"

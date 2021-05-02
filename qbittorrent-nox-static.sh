@@ -566,9 +566,7 @@ apply_patches() {
 # This function is to test a directory exists before attemtping to cd and fail with and exit code if it doesn't.
 #######################################################################################################################################################
 _cd() {
-	if cd "${1}" > /dev/null 2>&1; then
-		cd "${1}" || exit
-	else
+	if ! cd "${1}" > /dev/null 2>&1; then
 		echo -e "This directory does not exist. There is a problem"
 		echo
 		echo -e "${clr}${1}${cend}"
@@ -590,7 +588,7 @@ download_file() {
 		_cmd tar xf "${file_name}" -C "${qb_install_dir}"
 		app_dir="${qb_install_dir}/$(tar tf "${file_name}" | head -1 | cut -f1 -d"/")${subdir}"
 		mkdir -p "${app_dir}"
-		_cd "${app_dir}"
+		[[ "${1}" != 'boost' ]] && _cd "${app_dir}"
 	else
 		echo
 		echo "You must provide a filename name for the function - download_file"
@@ -726,7 +724,7 @@ post_build() {
 _multi_arch() {
 	if [[ ! -f "${qb_install_dir}/multiarch.lock" ]]; then
 		echo -e "${tn}${clr} Installing multiarch stuff ${cend}${tn}"
-		qb_arch="${CROSS_HOST_ARCH}"
+		qb_arch="${CROSS_HOST_ARCH:-aarch64}"
 		alpine_v="$(git_git ls-remote -t --refs https://github.com/alpinelinux/aports.git | awk '/v3/{sub("refs/tags/v", "");sub("(.*)(_)(.*)", ""); print $2 }' | awk '!/^$/' | sort -rV | head -n 1)"
 		multi_arch_dir="${qb_install_dir}/multiarch"
 		#
@@ -734,13 +732,13 @@ _multi_arch() {
 		#
 		echo "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${qb_arch}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz"
 		curl "http://dl-cdn.alpinelinux.org/alpine/v${alpine_v%.*}/releases/${qb_arch}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" > "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz"
-		tar xf "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" -C "${multi_arch_dir}"
-		#
+		if tar xf "${qb_install_dir}/alpine-minirootfs-${alpine_v}-${qb_arch}.tar.gz" -C "${multi_arch_dir}"; then
+			touch "${qb_install_dir}/multiarch.lock"
+		fi
 		cp -f /etc/resolv.conf "${multi_arch_dir}/etc/"
 		#
 		proot -q "qemu-${qb_arch}-static" -S "${multi_arch_dir}" apk add bash
 		#
-		touch "${qb_install_dir}/multiarch.lock"
 		exit
 	fi
 }

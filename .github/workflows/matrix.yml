@@ -28,7 +28,7 @@ jobs:
       - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh libtorrent
       - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qtbase
       - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qttools
-      - run: sudo -E  proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qbittorrent
+      - run: sudo -E proot -q "qemu-${{ matrix.cross_host }}-static" -S "qb-build/multiarch" bash qbittorrent-nox-static.sh qbittorrent
       - name: Archive code coverage results
         uses: actions/upload-artifact@v2.2.3
         with:
